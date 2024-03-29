@@ -1,0 +1,8 @@
+
+*.xml
+*.class
+*.lst
+*.original
+*.iml
+/frontend/build/static/**
+
