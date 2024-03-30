@@ -3,7 +3,6 @@ package com.test.tasks.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.test.tasks.exception.UnAuthorizedException;
 import com.test.tasks.model.UserDetails;
 import com.test.tasks.model.UserDetailsPojo;
@@ -26,31 +25,31 @@ public class UsersController {
 	@Autowired
 	private UserRepository userRepository;
 
-	@RequestMapping(value="/auth/login",method= RequestMethod.POST)
+	@RequestMapping(value="/auth/login",method= RequestMethod.POST) //Login API
 	public void userLogin(@RequestBody Map<String,String> login, HttpServletResponse response) throws JsonProcessingException {
 		String username = login.get("username");
 		String password = "";
 		try {
-			password = Arrays.toString(Base64.decodeBase64(login.get("password")));
+			password = Arrays.toString(Base64.decodeBase64(login.get("password"))); //Decode Base64 password input
 		} catch (Exception e) {
 			throw new RuntimeException("Security Breach Attempted!");
 		}
 
-		UserDetails userDetails = userRepository.findByUserId(username.toLowerCase());
+		UserDetails userDetails = userRepository.findByUserId(username.toLowerCase()); //Find user details
 		if (userDetails == null) {
 			throw new UnAuthorizedException("Invalid Username!");
 		}
-		String userPassword = Arrays.toString(Base64.decodeBase64(userDetails.getPassword()));
-		if (!password.equals(userPassword)) {
+		String userPassword = Arrays.toString(Base64.decodeBase64(userDetails.getPassword())); //Find stored password and decrypt it
+		if (!password.equals(userPassword)) {  //Check decrypted password from DB and user input
 			throw new UnAuthorizedException("Invalid Credentials!");
 		}
-		userDetails.setLastLoginDate(new Date());
+		userDetails.setLastLoginDate(new Date()); //Set current Login DateTime after successful authentication
 		userRepository.save(userDetails);
 		UserDetailsPojo udp = new UserDetailsPojo();
 		BeanUtils.copyProperties(userDetails,udp);
-		udp.setPassword(null);
-		response.setHeader("Access-Control-Expose-Headers", "X-AUTH-TOKEN");
-		response.setHeader("X-AUTH-TOKEN",
+		udp.setPassword(null); //Hide password from Auth Object for header
+		response.setHeader("Access-Control-Expose-Headers", "X-AUTH-TOKEN"); //Exposes Auth Header
+		response.setHeader("X-AUTH-TOKEN",		//Adding Auth Token Header
 				Base64.encodeBase64String(
 				new ObjectMapper()
 						.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)

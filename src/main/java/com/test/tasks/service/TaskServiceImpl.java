@@ -20,17 +20,15 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public UserTasksPojo addTaskForUser(UserTasksPojo task, HttpServletRequest request) {
-        String userId = userService.getUserFromToken(request);
-        UserTasks ut = new UserTasks();
+        String userId = userService.getUserFromToken(request); //Extract current user from token
+        UserTasks ut = new UserTasks(); //Initialize new object entity
         ut.setAddDate(new Date());
         ut.setTaskDesc(task.getDescription());
         ut.setTaskTitle(task.getTaskTitle());
-        if (task.getPriority()!=null) {
-            ut.setPriority(task.getPriority()); //Optional
-        }
+        ut.setPriority(task.getPriority());
         ut.setStatus(TaskStatus.TODO.getValue());
         ut.setUserId(userId);
-        return entityToBean(tasksRepository.save(ut));
+        return entityToBean(tasksRepository.save(ut)); //Save into table and return response
     }
 
     @Override
@@ -41,7 +39,7 @@ public class TaskServiceImpl implements TaskService {
         } catch(Exception e) {
             return new ArrayList<>();
         }
-        List<UserTasks> tasks = tasksRepository.findByUserId(userId);
+        List<UserTasks> tasks = tasksRepository.findByUserId(userId); //Get tasks of current user
         return tasks.stream().map(this::entityToBean).collect(Collectors.toList());
     }
 
@@ -51,17 +49,17 @@ public class TaskServiceImpl implements TaskService {
         String userId = userService.getUserFromToken(request);
         Optional<UserTasks> tasks = tasksRepository.findById(id);
         if (tasks.isEmpty()) {
-            throw new RuntimeException("Invalid task Id!");
+            throw new RuntimeException("Invalid task Id!"); //Check for invalid task
         }
         UserTasks ut = tasks.get();
         if (!ut.getUserId().equalsIgnoreCase(userId)) {
-            throw new RuntimeException("Security Breach Attempt!");
+            throw new RuntimeException("Security Breach Attempt!"); //Check for security threat
         }
         ut.setTaskDesc(task.getDescription());
         ut.setPriority(task.getPriority());
         ut.setTaskTitle(task.getTaskTitle());
         ut.setModDate(new Date());
-        ut.setStatus(TaskStatus.getValueByName(task.getStatus()));
+        ut.setStatus(TaskStatus.getValueByName(task.getStatus())); //Find numeric mapping and set value
         return entityToBean(tasksRepository.save(ut));
 
     }
@@ -71,11 +69,11 @@ public class TaskServiceImpl implements TaskService {
         String userId = userService.getUserFromToken(request);
         Optional<UserTasks> ut = tasksRepository.findById(id);
         if (ut.isEmpty()) {
-            throw new RuntimeException("Invalid task Id!");
+            throw new RuntimeException("Invalid task Id!"); //Check for invalid task
         }
         UserTasks task = ut.get();
         if (!task.getUserId().equalsIgnoreCase(userId)) {
-            throw new RuntimeException("Security Breach Attempt!");
+            throw new RuntimeException("Security Breach Attempt!"); //Check for security threat
         }
         tasksRepository.delete(task);
     }
@@ -85,16 +83,16 @@ public class TaskServiceImpl implements TaskService {
         String userId = userService.getUserFromToken(request);
         Optional<UserTasks> ut = tasksRepository.findById(id);
         if (ut.isEmpty()) {
-            throw new RuntimeException("Invalid task Id!");
+            throw new RuntimeException("Invalid task Id!"); //Check for invalid task
         }
         UserTasks task = ut.get();
         if (!task.getUserId().equalsIgnoreCase(userId)) {
-            throw new RuntimeException("Security Breach Attempt!");
+            throw new RuntimeException("Security Breach Attempt!"); //Check for security threat
         }
         if (task.getStatus().equals(TaskStatus.DONE.getValue())) {
-            throw new RuntimeException("Task already completed!");
+            throw new RuntimeException("Task already completed!"); //Check for invalid task status
         }
-        task.setStatus(task.getStatus() + 1);
+        task.setStatus(task.getStatus() + 1); //Increment status
         task.setModDate(new Date());
         return entityToBean(tasksRepository.save(task));
     }
@@ -103,6 +101,7 @@ public class TaskServiceImpl implements TaskService {
     public List<UserTasksPojo> getFilteredTasks(String status, HttpServletRequest request)  {
         String userId = userService.getUserFromToken(request);
         List<UserTasks> tasks = tasksRepository.findByUserIdAndStatus(userId,TaskStatus.getValueByName(status));
+        //Get tasks of current user with filtered status
         return tasks.stream().map(this::entityToBean).collect(Collectors.toList());
     }
 
@@ -111,16 +110,16 @@ public class TaskServiceImpl implements TaskService {
         String userId = userService.getUserFromToken(request);
         Optional<UserTasks> ut = tasksRepository.findById(id);
         if (ut.isEmpty()) {
-            throw new RuntimeException("Invalid task Id!");
+            throw new RuntimeException("Invalid task Id!"); //Check for invalid task
         }
         UserTasks task = ut.get();
         if (!task.getUserId().equalsIgnoreCase(userId)) {
-            throw new RuntimeException("Security Breach Attempt!");
+            throw new RuntimeException("Security Breach Attempt!"); //Check for security threat
         }
         return entityToBean(task);
     }
 
-    private UserTasksPojo entityToBean(UserTasks userTasks) {
+    private UserTasksPojo entityToBean(UserTasks userTasks) { //Method to not directly expose entity
 
         UserTasksPojo userTasksPojo = new UserTasksPojo();
         userTasksPojo.setDescription(userTasks.getTaskDesc());
@@ -128,7 +127,7 @@ public class TaskServiceImpl implements TaskService {
         userTasksPojo.setId(userTasks.getId());
         userTasksPojo.setModDate(userTasks.getModDate());
         userTasksPojo.setUserId(userTasks.getUserId());
-        userTasksPojo.setStatus(TaskStatus.getName(userTasks.getStatus()));
+        userTasksPojo.setStatus(TaskStatus.getName(userTasks.getStatus())); //Find name from value
         userTasksPojo.setStatusId(userTasks.getStatus());
         userTasksPojo.setTaskTitle(userTasks.getTaskTitle());
         userTasksPojo.setPriority(userTasks.getPriority());
