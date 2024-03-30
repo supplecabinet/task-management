@@ -6,4 +6,5 @@
 *.iml
 /frontend/build/static/**
 /target
+/target/classes
 
