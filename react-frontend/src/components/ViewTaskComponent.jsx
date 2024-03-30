@@ -34,7 +34,7 @@ class ViewEmployeeComponent extends Component {
                         </div>
                         <div className = "row">
                             <label> Description: </label>
-                            <div style={{marginLeft: "10px"}}> { this.state.task.description }</div>
+                            <div id="customDesc" style={{marginLeft: "10px"}} > { this.state.task.description }</div>
                         </div>
                         <div className = "row">
                             <label> Priority: </label>

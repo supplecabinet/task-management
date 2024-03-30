@@ -115,7 +115,7 @@ class CreateEmployeeComponent extends Component {
                                         </div>
                                         <div className = "form-group">
                                             <label> Task Description: </label>
-                                            <input placeholder="Task Description" name="description" className="form-control" 
+                                            <textarea  placeholder="Task Description" name="description" className="form-control" 
                                                 value={this.state.description} onChange={this.changeDescriptionHandler}/>
                                                 <label className="errorLabel">{this.state.descriptionError}</label>
                                         </div>

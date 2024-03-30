@@ -74,11 +74,11 @@ class ListEmployeeComponent extends Component {
     }
     filterTable(){
         if (this.state.filter == "All") {
-            TaskService.getMyTasks().then((res) => { //Repeat twice in case user not properly loaded
+            TaskService.getMyTasks().then((res) => { 
                 this.setState({ tasks: res.data});
             }); 
         } else {
-            TaskService.getMyFilteredTasks(this.state.filter).then((res) => { //Repeat twice in case user not properly loaded
+            TaskService.getMyFilteredTasks(this.state.filter).then((res) => { 
                 this.setState({ tasks: res.data});
             }); 
         }
