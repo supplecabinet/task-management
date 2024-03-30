@@ -1,4 +1,3 @@
-#task-management
 #Task Management App Documentation
 
 [Backend Code Setup]
@@ -74,15 +73,16 @@
 	
 	User ID          Password
 	--------------------------
-	tester1			pestotech
-	tester2			Mypass90@#2
+	tester1		pestotech
+	tester2		Mypass90@#2
 	
+3} Refer to README file under react-frontend directory for more information.
 
 #--------------------------------------This concludes frontend code setup-------------------------------------------------
 
-#--------------------Planned future updates----------------------------------
+#--------------------------------------Planned future updates-------------------------------------------------------------
 
-#1 User Registration - (Email will be Sent for Confimation)
-#2 Task End Date Reminder
-#3 Enhanced Login UI
-#4 History of task updation
+1} User Registration - (Email will be Sent for Confimation)
+2} Task End Date Reminder
+3} Enhanced Login UI
+4} History of every task updation
