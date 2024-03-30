@@ -19,36 +19,36 @@ public class TasksController {
     TaskService taskService;
 
     @RequestMapping(value="tasks",method = RequestMethod.POST)
-    public UserTasksPojo addTask(@RequestBody UserTasksPojo task, HttpServletRequest request) throws JsonProcessingException {
+    public UserTasksPojo addTask(@RequestBody UserTasksPojo task, HttpServletRequest request)  {
         return taskService.addTaskForUser(task,request);
     }
 
     @RequestMapping(value="tasks", method = RequestMethod.GET)
-    public List<UserTasksPojo> getMyTasks(HttpServletRequest request) throws JsonProcessingException {
+    public List<UserTasksPojo> getMyTasks(HttpServletRequest request)  {
         return taskService.getMyTasks(request);
     }
 
     @RequestMapping(value = "tasks/{id}", method = RequestMethod.PUT)
-    public UserTasksPojo updateTask(@RequestBody UserTasksPojo task,@PathVariable Integer id, HttpServletRequest request) throws JsonProcessingException {
+    public UserTasksPojo updateTask(@RequestBody UserTasksPojo task,@PathVariable Integer id, HttpServletRequest request)  {
         return taskService.updateTaskForUser(task,request,id);
     }
     @RequestMapping(value="tasks/{id}", method = RequestMethod.DELETE)
-    public void deleteTask(@PathVariable Integer id, HttpServletRequest request) throws JsonProcessingException {
+    public void deleteTask(@PathVariable Integer id, HttpServletRequest request)  {
         taskService.deleteMyTask(id,request);
     }
 
     @RequestMapping(value="tasks/upgrade/status/{id}", method = RequestMethod.PUT)
-    public UserTasksPojo updateStatus(@PathVariable Integer id, HttpServletRequest request) throws JsonProcessingException {
+    public UserTasksPojo updateStatus(@PathVariable Integer id, HttpServletRequest request)  {
         return taskService.updateStatus(id,request);
     }
 
     @RequestMapping(value="tasks/{id}", method = RequestMethod.GET)
-    public UserTasksPojo getMyTask(@PathVariable Integer id, HttpServletRequest request) throws JsonProcessingException {
+    public UserTasksPojo getMyTask(@PathVariable Integer id, HttpServletRequest request)  {
         return taskService.getMyTask(id,request);
     }
 
     @RequestMapping(value = "tasks/filter/{status}", method = RequestMethod.GET)
-    public List<UserTasksPojo> filteredList(@PathVariable String status, HttpServletRequest request) throws JsonProcessingException {
+    public List<UserTasksPojo> filteredList(@PathVariable String status, HttpServletRequest request)  {
         return taskService.getFilteredTasks(status,request);
     }
 

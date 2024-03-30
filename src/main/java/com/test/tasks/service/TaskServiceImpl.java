@@ -1,9 +1,5 @@
 package com.test.tasks.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.test.tasks.exception.UnAuthorizedException;
 import com.test.tasks.model.*;
 import com.test.tasks.repository.TasksRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,11 +14,13 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements TaskService {
     @Autowired
     TasksRepository tasksRepository;
+    @Autowired
+    UserService userService;
 
     @Override
     @Transactional
-    public UserTasksPojo addTaskForUser(UserTasksPojo task, HttpServletRequest request) throws JsonProcessingException {
-        String userId = getUserFromToken(request);
+    public UserTasksPojo addTaskForUser(UserTasksPojo task, HttpServletRequest request) {
+        String userId = userService.getUserFromToken(request);
         UserTasks ut = new UserTasks();
         ut.setAddDate(new Date());
         ut.setTaskDesc(task.getDescription());
@@ -36,10 +34,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<UserTasksPojo> getMyTasks(HttpServletRequest request) throws JsonProcessingException {
+    public List<UserTasksPojo> getMyTasks(HttpServletRequest request) {
         String userId = "";
         try {
-            userId = getUserFromToken(request);
+            userId = userService.getUserFromToken(request);
         } catch(Exception e) {
             return new ArrayList<>();
         }
@@ -49,8 +47,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public UserTasksPojo updateTaskForUser(UserTasksPojo task, HttpServletRequest request, Integer id) throws JsonProcessingException {
-        String userId = getUserFromToken(request);
+    public UserTasksPojo updateTaskForUser(UserTasksPojo task, HttpServletRequest request, Integer id) {
+        String userId = userService.getUserFromToken(request);
         Optional<UserTasks> tasks = tasksRepository.findById(id);
         if (tasks.isEmpty()) {
             throw new RuntimeException("Invalid task Id!");
@@ -69,8 +67,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void deleteMyTask(Integer id, HttpServletRequest request) throws JsonProcessingException {
-        String userId = getUserFromToken(request);
+    public void deleteMyTask(Integer id, HttpServletRequest request) {
+        String userId = userService.getUserFromToken(request);
         Optional<UserTasks> ut = tasksRepository.findById(id);
         if (ut.isEmpty()) {
             throw new RuntimeException("Invalid task Id!");
@@ -83,8 +81,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public UserTasksPojo updateStatus(Integer id, HttpServletRequest request) throws JsonProcessingException {
-        String userId = getUserFromToken(request);
+    public UserTasksPojo updateStatus(Integer id, HttpServletRequest request)  {
+        String userId = userService.getUserFromToken(request);
         Optional<UserTasks> ut = tasksRepository.findById(id);
         if (ut.isEmpty()) {
             throw new RuntimeException("Invalid task Id!");
@@ -102,15 +100,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<UserTasksPojo> getFilteredTasks(String status, HttpServletRequest request) throws JsonProcessingException {
-        String userId = getUserFromToken(request);
+    public List<UserTasksPojo> getFilteredTasks(String status, HttpServletRequest request)  {
+        String userId = userService.getUserFromToken(request);
         List<UserTasks> tasks = tasksRepository.findByUserIdAndStatus(userId,TaskStatus.getValueByName(status));
         return tasks.stream().map(this::entityToBean).collect(Collectors.toList());
     }
 
     @Override
-    public UserTasksPojo getMyTask(Integer id, HttpServletRequest request) throws JsonProcessingException {
-        String userId = getUserFromToken(request);
+    public UserTasksPojo getMyTask(Integer id, HttpServletRequest request) {
+        String userId = userService.getUserFromToken(request);
         Optional<UserTasks> ut = tasksRepository.findById(id);
         if (ut.isEmpty()) {
             throw new RuntimeException("Invalid task Id!");
@@ -123,6 +121,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private UserTasksPojo entityToBean(UserTasks userTasks) {
+
         UserTasksPojo userTasksPojo = new UserTasksPojo();
         userTasksPojo.setDescription(userTasks.getTaskDesc());
         userTasksPojo.setAddDate(userTasks.getAddDate());
@@ -133,20 +132,8 @@ public class TaskServiceImpl implements TaskService {
         userTasksPojo.setStatusId(userTasks.getStatus());
         userTasksPojo.setTaskTitle(userTasks.getTaskTitle());
         userTasksPojo.setPriority(userTasks.getPriority());
-        return userTasksPojo;
-    }
 
-    public String getUserFromToken(HttpServletRequest request) throws JsonProcessingException {
-        String token = request.getHeader("X-AUTH-TOKEN");
-        if (token == null) {
-            throw new UnAuthorizedException("User Not Authorized!");
-        }
-        byte[] decodedBytes = Base64.getDecoder().decode(token);
-        String decoded = new String(decodedBytes);
-        return new ObjectMapper()
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .readValue(decoded, UserDetailsPojo.class)
-                .getUserId();
+        return userTasksPojo;
     }
 
 }
