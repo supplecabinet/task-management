@@ -61,7 +61,7 @@ class ListEmployeeComponent extends Component {
                     window.location.reload();
                  }); 
             }
-            TaskService.getMyTasks().then((res) => { //Repeat twice in case user not properly loaded
+            TaskService.getMyTasks().then((res) => { //Repeat only in case user not properly loaded in frontend (one time)
                 this.setState({ tasks: res.data});
             }); 
           
@@ -86,8 +86,10 @@ class ListEmployeeComponent extends Component {
     }
 
     logOut(){
+
         sessionStorage.clear();
         localStorage.clear();
+        this.props.history.push('/');
         ReactDOM.render(
             <React.StrictMode>
             <Login />
@@ -100,7 +102,6 @@ class ListEmployeeComponent extends Component {
         return (
             
             <div>
-                 
                  <h2 className="text-center">Task List</h2>
                  <div className = "row">
                     <button className="btn btn-primary" onClick={this.createMyTask}> Create Task</button>
@@ -108,7 +109,7 @@ class ListEmployeeComponent extends Component {
                  </div>
                  <div  style={{marginLeft: "40%", width:"50%",padding: "10px;"}} className = "row">
                     <Select style={{marginLeft: "10px"}} value={{value:this.state.filter,label:this.state.filter}} options={this.state.statuses} name="status" onChange={this.changeStatusHandler}/>
-                    <button style={{marginLeft: "10px"}}  className="btn btn-primary" onClick={this.filterTable}> Filter</button>
+                    <button style={{marginLeft: "10px"}}  className="btn btn-secondary" onClick={this.filterTable}> Filter</button>
                     </div>
                  <br></br>
                  <div className = "row mycustom">

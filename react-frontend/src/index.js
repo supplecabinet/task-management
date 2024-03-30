@@ -6,7 +6,7 @@ import Login from './login';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-if (window.sessionStorage.getItem("X-AUTH-TOKEN")) { //If already logged in, render main screen
+if (window.sessionStorage.getItem("X-AUTH-TOKEN")) { //If already logged in, render main screen else render login screen
   ReactDOM.render(
     <React.StrictMode>
       <App />
