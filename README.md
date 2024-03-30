@@ -79,3 +79,10 @@
 	
 
 #--------------------------------------This concludes frontend code setup-------------------------------------------------
+
+#--------------------Planned future updates----------------------------------
+
+#1 User Registration - (Email will be Sent for Confimation)
+#2 Task End Date Reminder
+#3 Enhanced Login UI
+#4 History of task updation
