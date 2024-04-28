@@ -1,10 +1,10 @@
-
-*.xml
 *.class
 *.lst
 *.original
 *.iml
+.idea
 /frontend/build/static/**
 /target
 /target/classes
+/src/main/resources/static/**
 
