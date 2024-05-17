@@ -1,7 +1,9 @@
 package com.test.tasks.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.test.tasks.model.UserDetailsPojo;
 import com.test.tasks.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,11 @@ public class UsersController {
 	@RequestMapping(value = "/auth/signup", method = RequestMethod.PUT)
 	public void userSignUp(@RequestBody Map<String,String> signUp, HttpServletResponse response) {
 		userService.signUp(signUp,response);
+	}
+
+	@RequestMapping(value = "/auth/self", method = RequestMethod.GET)
+	public String getUserDetails(HttpServletRequest request) {
+		return userService.getUserFromToken(request);
 	}
 
 }

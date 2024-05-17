@@ -104,16 +104,16 @@ class ListEmployeeComponent extends Component {
             <div>
                  <h2 className="text-center">Task List</h2>
                  <div className = "row">
-                    <button className="btn btn-primary" style={{marginLeft: 10,marginRight:"auto"}} onClick={this.createMyTask}> Create Task</button>
-                    <button className="btn btn-danger" style={{marginRight: 10,marginLeft:"auto"}} onClick={this.logOut}> Log Out</button>
+                    <button className="btn btn-primary" style={{marginLeft: 20,marginRight:"auto"}} onClick={this.createMyTask}> Create Task</button>
+                    <button className="btn btn-danger" style={{marginRight: 20,marginLeft:"auto"}} onClick={this.logOut}> Log Out</button>
                  </div>
-                 <div  style={{marginLeft: "40%", width:"50%",padding: "10px;"}} className = "row">
+                 <div  style={{marginLeft: "40%", width:"50%",padding: "10px"}} className = "row">
                     <Select style={{marginLeft: "10px"}} value={{value:this.state.filter,label:this.state.filter}} options={this.state.statuses} name="status" onChange={this.changeStatusHandler}/>
                     <button style={{marginLeft: "10px"}}  className="btn btn-secondary" onClick={this.filterTable}> Filter</button>
                     </div>
                  <br></br>
                  <div className = "row mycustom">
-                        <table className = "table table-striped table-bordered">
+                        <table className = "table table-striped table-bordered" style={{marginRight: 30,marginLeft:30}}>
 
                             <thead>
                                 <tr>

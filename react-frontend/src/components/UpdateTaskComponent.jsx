@@ -81,7 +81,7 @@ class UpdateEmployeeComponent extends Component {
             setTimeout(() => {
                 toast.success("Task Updated Successfully!");
             }, 300);
-            this.props.history.push('/tasks');
+            this.props.history.push('/');
         });
     }
     
@@ -101,7 +101,7 @@ class UpdateEmployeeComponent extends Component {
     }
 
     cancel(){
-        this.props.history.push('/tasks');
+        this.props.history.push('/');
     }
 
     render() {

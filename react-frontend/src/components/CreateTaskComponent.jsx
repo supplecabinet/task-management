@@ -63,11 +63,11 @@ class CreateEmployeeComponent extends Component {
                 setTimeout(() => {
                     toast.success("Task Created Successfully!");
                 }, 300);
-                this.props.history.push('/tasks');
+                this.props.history.push('/');
             });
         }else{
             TaskService.updateMyTask(task, this.state.id).then( res => {
-                this.props.history.push('/tasks');
+                this.props.history.push('/');
             });
         }
     }
