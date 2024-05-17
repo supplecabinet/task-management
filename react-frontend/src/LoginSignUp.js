@@ -24,7 +24,11 @@ const LoginSignUp = () => {
     let signUpRequest = {username: userName, password: Buffer.from(password).toString('base64'), email: email};
     try {
       axios.put(TASKS_BASE_URL + "auth/signup", signUpRequest);
-      window.location.reload();
+      toast.success("Registration Successful!");
+      setUserName('');
+      setPassword('');
+      setEmail('');
+      //window.location.reload();
     } catch (e) {
       toast.error(e);
     }
