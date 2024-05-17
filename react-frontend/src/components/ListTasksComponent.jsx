@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import TaskService from '../services/TaskService';
-import Login from '../login';
+import Login from '../LoginSignUp';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select'
@@ -104,8 +104,8 @@ class ListEmployeeComponent extends Component {
             <div>
                  <h2 className="text-center">Task List</h2>
                  <div className = "row">
-                    <button className="btn btn-primary" onClick={this.createMyTask}> Create Task</button>
-                    <button className="btn btn-danger" style={{marginRight: 0,marginLeft:"auto"}} onClick={this.logOut}> Log Out</button>
+                    <button className="btn btn-primary" style={{marginLeft: 10,marginRight:"auto"}} onClick={this.createMyTask}> Create Task</button>
+                    <button className="btn btn-danger" style={{marginRight: 10,marginLeft:"auto"}} onClick={this.logOut}> Log Out</button>
                  </div>
                  <div  style={{marginLeft: "40%", width:"50%",padding: "10px;"}} className = "row">
                     <Select style={{marginLeft: "10px"}} value={{value:this.state.filter,label:this.state.filter}} options={this.state.statuses} name="status" onChange={this.changeStatusHandler}/>

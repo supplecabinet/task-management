@@ -20,4 +20,10 @@ public class UsersController {
 	public void userLogin(@RequestBody Map<String,String> login, HttpServletResponse response) throws JsonProcessingException {
 		userService.login(login, response);
 	}
+
+	@RequestMapping(value = "/auth/signup", method = RequestMethod.PUT)
+	public void userSignUp(@RequestBody Map<String,String> signUp, HttpServletResponse response) {
+		userService.signUp(signUp,response);
+	}
+
 }

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import App from './App';
 import ReactDOM from 'react-dom';
 import { ToastContainer, toast } from 'react-toastify';

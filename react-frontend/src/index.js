@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import Login from './login';
+import LoginSignUp from './LoginSignUp';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -16,7 +16,7 @@ if (window.sessionStorage.getItem("X-AUTH-TOKEN")) { //If already logged in, ren
 } else {
   ReactDOM.render(
     <React.StrictMode>
-      <Login />
+      <LoginSignUp />
     </React.StrictMode>,
     document.getElementById('root')
   );

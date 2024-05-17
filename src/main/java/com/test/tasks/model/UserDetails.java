@@ -9,7 +9,6 @@ import java.util.Date;
 public class UserDetails {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private String userId;
 	private String password;
 	private Date lastLoginDate;

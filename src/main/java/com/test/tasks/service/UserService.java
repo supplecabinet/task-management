@@ -10,4 +10,6 @@ public interface UserService {
     String getUserFromToken(HttpServletRequest request) ;
 
     void login(Map<String, String> login, HttpServletResponse response) throws JsonProcessingException;
+
+    void signUp(Map<String, String> signUp, HttpServletResponse response);
 }

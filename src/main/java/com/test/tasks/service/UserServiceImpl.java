@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService{
             throw new RuntimeException("Security Breach Attempted!");
         }
 
-        UserDetails userDetails = userRepository.findByUserId(username.toLowerCase()); //Find user details
+        UserDetails userDetails = userRepository.findByUserIdIgnoreCase(username.toLowerCase()); //Find user details
         if (userDetails == null) {
             throw new UnAuthorizedException("Invalid Username!");
         }
@@ -70,6 +70,25 @@ public class UserServiceImpl implements UserService{
                         new ObjectMapper()
                                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                                 .writeValueAsString(udp).getBytes()));
+    }
+
+    @Override
+    public void signUp(Map<String, String> signUp, HttpServletResponse response) {
+        String username = signUp.get("username");
+        String password = "";
+        try {
+            password = Arrays.toString(org.apache.tomcat.util.codec.binary.Base64.decodeBase64(signUp.get("password"))); //Decode Base64 password input
+        } catch (Exception e) {
+            throw new RuntimeException("Security Breach Attempted!");
+        }
+        UserDetails ud = userRepository.findByUserIdIgnoreCase(username.toLowerCase()); //Find user details
+        if (ud != null) {
+            throw new RuntimeException("User already exists!");
+        }
+        UserDetails userDetails = new UserDetails();
+        userDetails.setUserId(username);
+        userDetails.setPassword(signUp.get("password"));
+        userRepository.save(userDetails);
     }
 
 }
