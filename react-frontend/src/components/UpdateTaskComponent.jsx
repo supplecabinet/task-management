@@ -110,7 +110,7 @@ class UpdateEmployeeComponent extends Component {
                 <br></br>
                    <div className = "container">
                         <div className = "row">
-                            <div className = "card col-md-6 offset-md-3 offset-md-3">
+                        <div className = "card col-md-9 offset-md-3" style={{marginRight: 30,marginLeft:120,marginBottom:20}}>
                                 <h3 className="text-center">Update Task</h3>
                                 <div className = "card-body">
                                     <form>

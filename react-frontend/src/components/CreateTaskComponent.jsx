@@ -101,7 +101,7 @@ class CreateEmployeeComponent extends Component {
                 <br></br>
                    <div className = "container">
                         <div className = "row">
-                            <div className = "card col-md-6 offset-md-3 offset-md-3">
+                        <div className = "card col-md-9 offset-md-3" style={{marginRight: 30,marginLeft:120,marginBottom:20}}>
                                 {
                                     this.getTitle()
                                 }
