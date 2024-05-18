@@ -8,6 +8,8 @@ public class UserDetailsPojo {
 	private String userId;
 	private String password;
 	private Date lastLoginDate;
+	private Date addDate;
+	private String email;
 
 	public String getUserId() {
 		return userId;
@@ -31,5 +33,21 @@ public class UserDetailsPojo {
 
 	public void setLastLoginDate(Date lastLoginDate) {
 		this.lastLoginDate = lastLoginDate;
+	}
+
+	public Date getAddDate() {
+		return addDate;
+	}
+
+	public void setAddDate(Date addDate) {
+		this.addDate = addDate;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }

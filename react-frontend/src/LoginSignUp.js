@@ -13,12 +13,28 @@ const LoginSignUp = () => {
   const [action,setAction] = useState("Login");
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [email, setEmail] = useState('');
   const [userNameError, setUserNameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const TASKS_BASE_URL = "http://localhost:8080/api/v1/";
+
+  const pwdValidation = ()=> {
+    if (passwordConfirm === '') {
+      toast.error("Please confirm your password!");
+      return false;
+    }
+    if (passwordConfirm != password) {
+      toast.error("Password is not matching!");
+      return false;
+    }
+    return true;
+  }
   const onSignUp = () => {
     if (!formValidation()) {
+      return;
+    }
+    if (!pwdValidation()) {
       return;
     }
     let signUpRequest = {username: userName, password: Buffer.from(password).toString('base64'), email: email};
@@ -27,6 +43,7 @@ const LoginSignUp = () => {
       toast.success("Registration Successful!");
       setUserName('');
       setPassword('');
+      setPasswordConfirm('');
       setEmail('');
       //window.location.reload();
     } catch (e) {
@@ -114,6 +131,7 @@ const LoginSignUp = () => {
         <img src={pwd_icon} alt=""/>
         <input type="password" value={password} onChange={(ev) => setPassword(ev.target.value)} placeholder='Password'/>
       </div>
+      {action==="Sign Up"?<div className="input"><img src={pwd_icon} alt=""/><input type="password" value={passwordConfirm} onChange={(ev) => setPasswordConfirm(ev.target.value)} placeholder='Confirm Password'/></div>:<div></div>}
       </div>
       {action==="Login"?<div className="forgot-password">Forgot password? <span onClick={()=>{forgotPwd()}}>Click Here!</span></div>:<div></div>}
       <div className='submit-container'>

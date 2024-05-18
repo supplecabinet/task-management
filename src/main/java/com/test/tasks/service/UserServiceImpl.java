@@ -88,6 +88,8 @@ public class UserServiceImpl implements UserService{
         UserDetails userDetails = new UserDetails();
         userDetails.setUserId(username);
         userDetails.setPassword(signUp.get("password"));
+        userDetails.setAddDate(new Date());
+        userDetails.setEmail(signUp.get("email"));
         userRepository.save(userDetails);
     }
 
