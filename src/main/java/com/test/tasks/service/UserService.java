@@ -12,4 +12,8 @@ public interface UserService {
     void login(Map<String, String> login, HttpServletResponse response) throws JsonProcessingException;
 
     void signUp(Map<String, String> signUp, HttpServletResponse response);
+
+    void generateOTP(String userId);
+
+    void validateOTP(Map<String, String> validateBody);
 }

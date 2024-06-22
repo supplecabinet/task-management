@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.tasks.exception.UnAuthorizedException;
+import com.test.tasks.model.EmailPojo;
 import com.test.tasks.model.UserDetails;
 import com.test.tasks.model.UserDetailsPojo;
 import com.test.tasks.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
@@ -22,6 +24,9 @@ import java.util.Map;
 public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
     @Override
     public String getUserFromToken(HttpServletRequest request)  {
         String token = request.getHeader("X-AUTH-TOKEN");
@@ -91,6 +96,50 @@ public class UserServiceImpl implements UserService{
         userDetails.setAddDate(new Date());
         userDetails.setEmail(signUp.get("email"));
         userRepository.save(userDetails);
+    }
+
+    @Override
+    public void generateOTP(String userId) {
+        String decodedUserId = new String(Base64.getDecoder().decode(userId), StandardCharsets.UTF_8);
+        UserDetails ud = userRepository.findByUserId(decodedUserId);
+        if (ud == null) {
+            throw new RuntimeException("Invalid userId or token already exists!");
+        }
+        if (ud.getOtp() != null) {
+            long prev = Long.parseLong(new String(Base64.getDecoder().decode(ud.getOtp()), StandardCharsets.UTF_8).split(":")[1]);
+            if (prev > System.currentTimeMillis()) {
+                throw new RuntimeException("OTP already sent!");
+            }
+        }
+        long valid = System.currentTimeMillis() + (1000 * 10 * 60); //Token valid for 10 minutes
+        String otp = Base64.getEncoder().encodeToString((decodedUserId + ":" + valid).getBytes());
+        ud.setOtp(otp);
+        userRepository.save(ud);
+        String body = "Your OTP for resetting your password is: " + otp + " . Valid for 10 minutes only!";
+        String subject = "Reset Password - Task Mgmt";
+        EmailPojo email = new EmailPojo(ud.getEmail(), body, subject, null);
+        String status = emailService.sendSimpleMail(email);
+        System.out.println("Email Sent Status:{}"+status);
+    }
+
+    @Override
+    public void validateOTP(Map<String, String> validateBody) {
+        String otp = validateBody.get("otp");
+        String decoded = new String(Base64.getDecoder().decode(otp), StandardCharsets.UTF_8);
+        String userId = decoded.split(":")[0];
+        UserDetails ud = userRepository.findByUserIdIgnoreCase(userId);
+        if (ud == null) {
+            throw new RuntimeException("Invalid username!");
+        }
+        long validity = Long.parseLong(decoded.split(":")[1]);
+        if (validity < System.currentTimeMillis()) {
+            throw new RuntimeException("OTP Expired!");
+        }
+        String newPass = new String(Base64.getDecoder().decode(validateBody.get("password")), StandardCharsets.UTF_8);
+        ud.setOtp(null);
+        ud.setPassword(Base64.getEncoder().encodeToString(newPass.getBytes()));
+        ud.setLastPwdChangeDate(new Date());
+        userRepository.save(ud);
     }
 
 }

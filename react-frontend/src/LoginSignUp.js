@@ -8,6 +8,7 @@ import user_icon from './assets/person.png';
 import email_icon from './assets/email.png';
 import pwd_icon from './assets/password.png';
 import axios from 'axios';
+import ForgotPassword from './ForgotPassword';
 
 const LoginSignUp = () => {
   const [action,setAction] = useState("Login");
@@ -73,8 +74,14 @@ const LoginSignUp = () => {
     return true;
   }
   const forgotPwd = () => {
-    toast.info("Coming Soon!");
-    return;
+    setTimeout(() => {
+      ReactDOM.render(
+        <React.StrictMode>
+          <ForgotPassword />
+        </React.StrictMode>,
+        document.getElementById('root')
+      );
+    }, 200);
   }
   const onButtonClick = () => {
     // Set initial error values to empty

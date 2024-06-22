@@ -33,4 +33,14 @@ public class UsersController {
 		return userService.getUserFromToken(request);
 	}
 
+	@RequestMapping(value = "/request/otp", method = RequestMethod.POST)
+	public void requestOTP(@RequestBody String userId) {
+		userService.generateOTP(userId);
+	}
+
+	@RequestMapping(value = "/validate/otp", method = RequestMethod.POST)
+	public void validateOTP(@RequestBody Map<String,String> validateBody) {
+		userService.validateOTP(validateBody);
+	}
+
 }
