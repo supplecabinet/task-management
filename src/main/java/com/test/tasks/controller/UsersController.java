@@ -23,6 +23,10 @@ public class UsersController {
 		userService.login(login, response);
 	}
 
+	@RequestMapping(value = "/activate", method = RequestMethod.GET)
+	public String activateUser(@RequestParam("verify") String verify, HttpServletResponse response) {
+		return userService.activateUser(verify, response);
+	}
 	@RequestMapping(value = "/auth/signup", method = RequestMethod.PUT)
 	public void userSignUp(@RequestBody Map<String,String> signUp, HttpServletResponse response) {
 		userService.signUp(signUp,response);

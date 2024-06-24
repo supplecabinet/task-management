@@ -16,4 +16,6 @@ public interface UserService {
     void generateOTP(String userId);
 
     void validateOTP(Map<String, String> validateBody);
+
+    String activateUser(String verify, HttpServletResponse response);
 }

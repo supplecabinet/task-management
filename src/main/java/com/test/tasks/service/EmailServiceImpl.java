@@ -16,32 +16,32 @@ import java.io.File;
 @Service
 public class EmailServiceImpl implements EmailService{
     @Autowired
-    private JavaMailSender javaMailSender;
+    private JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
     private String sender;
+
     @Override
     public String sendSimpleMail(EmailPojo details) {
         try {
 
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             // Creating a simple mail message
-            SimpleMailMessage mailMessage
-                    = new SimpleMailMessage();
 
             // Setting up necessary details
-            mailMessage.setFrom(sender);
-            mailMessage.setTo(details.getRecipient());
-            mailMessage.setText(details.getMsgBody());
-            mailMessage.setSubject(details.getSubject());
+            helper.setFrom(sender);
+            helper.setTo(details.getRecipient());
+            helper.setText(details.getMsgBody(), true);
+            helper.setSubject(details.getSubject());
 
             // Sending the mail
-            javaMailSender.send(mailMessage);
+            mailSender.send(mimeMessage);
             return "Mail Sent Successfully...";
         }
 
         // Catch block to handle the exceptions
         catch (Exception e) {
-            e.printStackTrace();
             return "Error while Sending Mail";
         }
     }
@@ -49,7 +49,7 @@ public class EmailServiceImpl implements EmailService{
     @Override
     public String sendMailWithAttachment(EmailPojo details) {
         MimeMessage mimeMessage
-                = javaMailSender.createMimeMessage();
+                = mailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
 
         try {
@@ -73,7 +73,7 @@ public class EmailServiceImpl implements EmailService{
                     file.getFilename(), file);
 
             // Sending the mail
-            javaMailSender.send(mimeMessage);
+            mailSender.send(mimeMessage);
             return "Mail sent Successfully";
         }
 

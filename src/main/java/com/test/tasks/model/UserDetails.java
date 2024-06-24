@@ -14,8 +14,9 @@ public class UserDetails {
     private Date lastLoginDate;
     private Date addDate;
     private String email;
-    private String otp;
+    private Integer otp;
     private Date lastPwdChangeDate;
+    private Integer userStatus;
 
     public String getUserId() {
         return userId;
@@ -57,11 +58,11 @@ public class UserDetails {
         this.addDate = addDate;
     }
 
-    public String getOtp() {
+    public Integer getOtp() {
         return otp;
     }
 
-    public void setOtp(String otp) {
+    public void setOtp(Integer otp) {
         this.otp = otp;
     }
 
@@ -71,5 +72,13 @@ public class UserDetails {
 
     public void setLastPwdChangeDate(Date lastPwdChangeDate) {
         this.lastPwdChangeDate = lastPwdChangeDate;
+    }
+
+    public Integer getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(Integer userStatus) {
+        this.userStatus = userStatus;
     }
 }

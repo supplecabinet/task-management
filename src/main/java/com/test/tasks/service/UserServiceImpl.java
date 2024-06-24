@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.tasks.exception.UnAuthorizedException;
-import com.test.tasks.model.EmailPojo;
-import com.test.tasks.model.UserDetails;
-import com.test.tasks.model.UserDetailsPojo;
+import com.test.tasks.model.*;
 import com.test.tasks.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -27,6 +22,10 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private OtpRepository otpRepository;
+
     @Override
     public String getUserFromToken(HttpServletRequest request)  {
         String token = request.getHeader("X-AUTH-TOKEN");
@@ -59,6 +58,9 @@ public class UserServiceImpl implements UserService{
         UserDetails userDetails = userRepository.findByUserIdIgnoreCase(username.toLowerCase()); //Find user details
         if (userDetails == null) {
             throw new UnAuthorizedException("Invalid Username!");
+        }
+        if (userDetails.getUserStatus().equals(2)) {
+            throw new RuntimeException("User not activated!");
         }
         String userPassword = Arrays.toString(org.apache.tomcat.util.codec.binary.Base64.decodeBase64(userDetails.getPassword())); //Find stored password and decrypt it
         if (!password.equals(userPassword)) {  //Check decrypted password from DB and user input
@@ -95,7 +97,15 @@ public class UserServiceImpl implements UserService{
         userDetails.setPassword(signUp.get("password"));
         userDetails.setAddDate(new Date());
         userDetails.setEmail(signUp.get("email"));
+        userDetails.setUserStatus(2);
+        userDetails.setOtp(new Random().nextInt(999999 - 100000 + 1) + 100000);
         userRepository.save(userDetails);
+        String coded = "https://sudhanshu.pro/api/v1/activate?verify=" + Base64.getEncoder().encodeToString(userDetails.getOtp().toString().getBytes());
+        String body = "Hi "+ userDetails.getUserId() + ", please " + "<a href=\"" + coded + "\">Click Here</a> to activate your account. Happy Tasking :)";
+        String subject = "Account Verification - Task Mgmt";
+        EmailPojo email = new EmailPojo(userDetails.getEmail(), body, subject, null);
+        String status = emailService.sendSimpleMail(email);
+        System.out.println("Email Sent Status:{}"+status);
     }
 
     @Override
@@ -106,16 +116,21 @@ public class UserServiceImpl implements UserService{
             throw new RuntimeException("Invalid userId or token already exists!");
         }
         if (ud.getOtp() != null) {
-            long prev = Long.parseLong(new String(Base64.getDecoder().decode(ud.getOtp()), StandardCharsets.UTF_8).split(":")[1]);
+            OtpStore otp = otpRepository.findByOtpId(ud.getOtp());
+            long prev = Long.parseLong(new String(Base64.getDecoder().decode(otp.getOtpFull()), StandardCharsets.UTF_8).split(":")[1]);
             if (prev > System.currentTimeMillis()) {
                 throw new RuntimeException("OTP already sent!");
             }
         }
         long valid = System.currentTimeMillis() + (1000 * 10 * 60); //Token valid for 10 minutes
         String otp = Base64.getEncoder().encodeToString((decodedUserId + ":" + valid).getBytes());
-        ud.setOtp(otp);
+        OtpStore newOtp = new OtpStore();
+        newOtp.setOtpId(new Random().nextInt(999999 - 100000 + 1) + 100000);
+        newOtp.setOtpFull(otp);
+        otpRepository.save(newOtp);
+        ud.setOtp(newOtp.getOtpId());
         userRepository.save(ud);
-        String body = "Your OTP for resetting your password is: " + otp + " . Valid for 10 minutes only!";
+        String body = "Your OTP for resetting the password is: " + newOtp.getOtpId() + " . Valid for 10 minutes only!";
         String subject = "Reset Password - Task Mgmt";
         EmailPojo email = new EmailPojo(ud.getEmail(), body, subject, null);
         String status = emailService.sendSimpleMail(email);
@@ -125,14 +140,22 @@ public class UserServiceImpl implements UserService{
     @Override
     public void validateOTP(Map<String, String> validateBody) {
         String otp = validateBody.get("otp");
-        String decoded = new String(Base64.getDecoder().decode(otp), StandardCharsets.UTF_8);
+        OtpStore store = otpRepository.findByOtpId(Integer.valueOf(otp));
+        if (store == null) {
+            throw new RuntimeException("Invalid OTP entered!");
+        }
+        String decoded = new String(Base64.getDecoder().decode(store.getOtpFull()), StandardCharsets.UTF_8);
         String userId = decoded.split(":")[0];
         UserDetails ud = userRepository.findByUserIdIgnoreCase(userId);
         if (ud == null) {
             throw new RuntimeException("Invalid username!");
         }
+        if (!store.getOtpId().equals(ud.getOtp())) {
+            throw new RuntimeException("Invalid OTP entered!");
+        }
         long validity = Long.parseLong(decoded.split(":")[1]);
         if (validity < System.currentTimeMillis()) {
+            otpRepository.delete(store);
             throw new RuntimeException("OTP Expired!");
         }
         String newPass = new String(Base64.getDecoder().decode(validateBody.get("password")), StandardCharsets.UTF_8);
@@ -140,6 +163,21 @@ public class UserServiceImpl implements UserService{
         ud.setPassword(Base64.getEncoder().encodeToString(newPass.getBytes()));
         ud.setLastPwdChangeDate(new Date());
         userRepository.save(ud);
+        otpRepository.delete(store);
+    }
+
+    @Override
+    public String activateUser(String verify, HttpServletResponse response) {
+        Integer otp = Integer.valueOf(new String(Base64.getDecoder().decode(verify.getBytes()), StandardCharsets.UTF_8));
+        UserDetails ud = userRepository.findByOtp(otp);
+        if (ud == null) {
+            return "Invalid activation link!";
+        }
+        response.setContentType("text/html");
+        ud.setUserStatus(3);
+        ud.setOtp(null);
+        userRepository.save(ud);
+        return "<HTML><HEAD><TITLE>Verification Success</TITLE></HEAD><BODY>Your account has been verified successfully! Click here to " + "<a href=\"https://sudhanshu.pro\">Login</a></BODY></HTML>";
     }
 
 }

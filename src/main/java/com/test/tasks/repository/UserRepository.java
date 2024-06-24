@@ -9,4 +9,6 @@ public interface UserRepository extends JpaRepository<UserDetails, Long>{
 
     UserDetails findByUserId(String userId);
     UserDetails findByUserIdIgnoreCase(String userId);
+
+    UserDetails findByOtp(Integer otp);
 }
